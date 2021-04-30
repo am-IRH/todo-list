@@ -1,18 +1,17 @@
 const Todo = require("../model/todo");
-const todoUtils = require("../utils/todos");
 
-
-module.exports.getIndex = (req, res) => {
-    todoUtils.completedTodo(completedTodos => {
-        todoUtils.getRemaining(remainingTodos => {
-            Todo.fetchAll(todos => {
-                res.render("index.ejs", {
-                    pageTitle: "کار",
-                    todos,
-                    completedTodos,
-                    remainingTodos
-                })
+// send data to ejs page && show ejs page
+module.exports.getIndex = async (req, res) => {
+    const completedTodos = await Todo.count({ where: { completed: true } });
+        Todo.findAll().then(todos => {
+            todos.forEach(todo => {
+                console.log(todo.createdAt   );
+            })
+            res.render("index.ejs", {
+                pageTitle: "کارهای روزمره",
+                todos,
+                completedTodos,
+                remainingTodos: todos.length - completedTodos
             })
         })
-    })
 }

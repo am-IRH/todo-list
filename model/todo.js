@@ -1,42 +1,29 @@
-const TodosUtils = require("../utils/todos");
+const { DataTypes} = require("sequelize");
+const {Sequelize} = require("sequelize");
 
-class Todo {
-    constructor(id, text, completed = false) {
-        this.id = id,
-        this.text = text, 
-        this.completed = completed
-    }
-    save(callback) {
-        TodosUtils.getTodos(todos => {
-            todos.push(this);
-            TodosUtils.saveTodos(todos, err => {
-                callback(err);
-            })
-        })
-    }
-    static fetchAll(callback) {
-        TodosUtils.getTodos(todos => {
-            callback(todos);
-        })
-    }
-    static deleteTodo(id, callback) {
-        TodosUtils.getTodos(todos => {
-            TodosUtils.saveTodos(todos.filter(t => t.id != id ), err => {
-                callback(err);
-            })
-        })
-    }
-    static completedTodo(id, callback) {
-        TodosUtils.getTodos(todos => {
-            const indexTodo = todos.findIndex(t => t.id == id)
+// to connect to the database: databaseName / user / password, {options}
+const sequelize = new Sequelize("todo-db", "root", "@Amir1398", {
+    dialect: "mysql",
+    host: "localhost"
+});
 
-            const todo = todos[indexTodo];
-            todo.completed = true;
-            todos[indexTodo] = todo;
-            TodosUtils.saveTodos(todos, err => callback(err))
-        })
+// define model and optional
+const Todo = sequelize.define("todo", {
+    // Model attribute
+    id: {
+        type: DataTypes.INTEGER,
+        autoIncrement: true,
+        primaryKey: true,
+        allowNull: false,
+    },
+    text: {
+        type: DataTypes.STRING,
+        allowNull: false,
+    },
+    completed: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: false
     }
-}
-
+});
 
 module.exports = Todo;
